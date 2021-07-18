@@ -1,0 +1,24 @@
+{
+  "name": "aws-sqs-offline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {},
+  "devDependencies": {
+    "aws-sdk": "^2.948.0",
+    "serverless-offline": "^7.0.0",
+    "serverless-offline-sqs": "^4.1.1"
+  },
+  "scripts": {
+    "offline": "OFFLINE=TRUE sls offline start",
+    "queue-start": "java -Dconfig.file=elasticmq.conf -jar .elasticmq/elasticmq-server-0.15.7.jar"
+  },
+  "keywords": [
+    "aws",
+    "elasticmq",
+    "serverless",
+    "aws sqs"
+  ],
+  "author": "steven.lee <shstevenlee@gmail.com",
+  "license": "ISC"
+}

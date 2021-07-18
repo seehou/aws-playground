@@ -1,0 +1,65 @@
+service: aws-sqs-offline
+frameworkVersion: '2'
+
+plugins:
+  - serverless-offline-sqs
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+    httpPort: 3000
+    lambdaPort: 3001
+    useChildProcesses: false
+  serverless-offline-sqs:
+    sqsHost: 127.0.0.1
+    sqsPort: 9324
+    autoCreate: false
+    apiVersion: "latest"
+    endpoint: http://127.0.0.1:9324
+    region: us-east-1
+    accessKeyId: local
+    secretAccessKey: local
+    skipCacheInvalidation: false
+
+functions:
+  hello:
+    handler: handler.hello
+
+  QueueSendMessage:
+    handler: handler.sendMessage
+    name: Queue-SendMessage-Lambda
+    description: to send sqs message
+
+  QueueReceiveMessage:
+    handler: handler.receiveMessage
+    name: Queue-ReceiveMessage-Lambda
+    description: to receive sqs message
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - myFirstQueue
+              - Arn
+          batchSize: 10
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    myFirstQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: myFirstQueue
+        MessageRetentionPeriod: 1209600
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - myFirstQueue
+              - Arn
+          maxReceiveCount: 3
+        VisibilityTimeout: 10
